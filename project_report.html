@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Students name + ID here" />
+  <title>BDA - Project</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">BDA - Project</h1>
+<p class="author">Students name + ID here</p>
+</header>
+<p><code>{r setup, include=FALSE} # This chunk sets echo = TRUE as default, that is print all code. # knitr::opts_chunk$set can be used to set other notebook generation options, too. knitr::opts_chunk$set(echo = TRUE)</code></p>
+<p><code>{r, results='hide', include=FALSE} library(ggplot2) library(posterior) library(rstanarm) library(splines) library(MASS) library(loo) #library(magrittr) #library(dplyr) #library(tidyr) library(gridExtra) library(corrplot) library(aaltobda) library(bayesplot) library(cmdstanr) options(mc.cores = 4) set_cmdstan_path('/coursedata/cmdstan') color_scheme_set("mix-teal-pink")</code></p>
+<h1 id="introduction-details-about-the-dataset">1) Introduction &amp;
+details about the dataset</h1>
+<p>Yearly almost 18 million people lose their lives because of
+cardiovascular diseases [1]. Cardiovascular diseases affect the heart,
+lungs and blood vessels and represent 32 percent of all global deaths.
+Due to this, it is crucial to notice cardiovascular disease early which
+helps us to manage and treat them. The dataset used in this project
+contains 299 observations with 13 clinical features for predicting death
+events related to cardiovascular diseases. Because cardiovascular deaths
+can be prevented with the correction of diet, an increase in physical
+inactivity and the elimination of alcohol and tobacco, it’s important to
+detect cardiovascular diseases as early as possible [1]. People who are
+at the highest risk of getting a Cardiovascular disease need to have
+early detection. Our Bayesian models can be valuable in this issue. With
+the help of Bayesian data analysis, we might be able to detect
+cardiovascular diseases earlier and separate the ones that are at the
+highest risk of getting a cardiovascular disease. Below are some
+illustrative figure of the data.</p>
+<p>The link to the dataset can be found in the references of this
+project which is located at the bottom of the report. Since the dataset
+is freely available on Kaggle and anyone can use it, there have been
+plenty of different types of analysis made on it. Some reports have
+tried to use machine learning with classification or decision trees. On
+the other hand, people have also tried to fit regression models into it.
+In total Kaggle has over 800 reports/codes that have used the
+dataset.</p>
+<p><code>{r, comment=''} #Import the dataset clinical_records &lt;- read.csv(file = "heart_failure_clinical_records_dataset.csv") clinical_data_for_stan_model&lt;- list(observations = clinical_records,                                     no_of_rows = nrow(clinical_records),                                     no_of_cols = ncol(clinical_records)) cat("Number of rows (records) and columns (features and 1 death label):", nrow(clinical_records), ncol(clinical_records), "\n")</code>
+Here is an example of the first record in the dataset
+<code>{r, comment=''} head(clinical_records, 1)</code></p>
+<p><code>{r, comment=''} #Find rows contain binary values (True), or numerical values (False) apply(clinical_records, 2, function(x) {all(x %in% 0:1)})</code>
+Out of 13 columns in the dataset, six are binary features, seven are
+numerical features, and one death_event row which denotes whether the
+patients die due to heart failure.</p>
+<p>Below is a correlation plot of features. Red color indicates high
+negative correlation and blue color indicates high positive correlation.
+For example sex and smoking have a high correlation. On the other hand,
+death_event and time have high negative correlation.</p>
+<p><code>{r, comment=''} corrplot(cor(clinical_records), type="upper", order="hclust")</code></p>
+<h1 id="details-about-dataset">2) Details about dataset</h1>
+<p>Definitions of the clinical features in the dataset: - Age: the
+patient’s age.</p>
+<ul>
+<li><p>Anaemia: Whether the patient has a decrease of red blood cells or
+hemoglobin.</p></li>
+<li><p>Creatine phosphokinase is Level of the CPK enzyme in the blood
+(mcg/L). It is found mainly in the heart, brain, and skeletal muscle
+[2]. The average range is 10 to 120 mcg/L. Abnormal results indicates
+(filtered to related to heart only): heart attack, inflammation of the
+heart muscle.</p></li>
+<li><p>Diabetes: If the patient has diabetes</p></li>
+<li><p>Ejection fraction is the percentage of blood leaving the heart at
+each contraction (percentage) [3]. It reflects how sufficiently your
+heart pumps blood.</p></li>
+<li><p>Serum creatinine level is based on a blood test that measures the
+quantity of creatinine in your blood [4]. It describes how well a kidney
+is functioning. When your kidneys are not functioning well, your serum
+creatinine level goes up. In general, a normal level is: 0.7 - 1.3 mg/dL
+for males, 0.6 - 1.1 mg/dL for females.</p></li>
+<li><p>high_blood_pressure: If the patient has hypertension.</p></li>
+<li><p>platelets: Platelets in the blood (kiloplatelets/mL).</p></li>
+<li><p>serum_sodium: Level of serum sodium in the blood (mEq/L). Sodium
+help control the amount of fluid and the proportion of acids and bases
+(pH balance) in your body [5]. Sodium furthermore helps your nerves and
+muscles work appropriately.</p></li>
+<li><p>sex: male = 1, female = 0.</p></li>
+<li><p>smoking: whether the patient smoke.</p></li>
+<li><p>Time: is the number of days the patients is in the treatment,
+recorded when dead or left the treatment (recover)</p></li>
+</ul>
+<h1 id="description-of-the-two-models-used">3) Description of the two
+models used:</h1>
+<p>For this project, we use a linear and quadratic function in
+combination with logit transformation for modelling. The equations is
+shown as below:</p>
+<p><span class="math inline">$log(\frac{P(death | X)}{1 - P(death | X)})
+= w_1 * x_1 + w_2 * x_2 + ... + w_{12} * x_{12} + bias$</span></p>
+<p><span class="math inline">$P(death | X) = \frac{1}{1 + e^{-(w_1 * x_1
++ w2 * x_2 + ... w_{12} * x_{12} + bias)} }$</span></p>
+<p>The observation is modeled as:</p>
+<p><span
+class="math inline"><em>y</em> ∼ <em>B</em>(<em>P</em>(<em>d</em><em>e</em><em>a</em><em>t</em><em>h</em>|<em>X</em>))</span></p>
+<p>In the quadratic model, we simply add a square term for each
+features, such that:</p>
+<p><span class="math inline">$log(\frac{P(death | X)}{1 - P(death | X)})
+= w_{11} * x_1 + w_{21} * x_1^2 + ... + bias$</span></p>
+<h1 id="weakly-informative-priors">4) Weakly informative priors</h1>
+<p>The model is supposed to estimates the weights <span
+class="math inline"><em>w</em><sub>**</sub></span> in the equations
+above. Since we do not know what is going to be the value for those
+parameters, we just make a wild guess by modelling each of the weights
+with a “wide enough” normal distributions of <span
+class="math inline"><em>N</em>(0,10)</span>. Thus this is our weakly
+informative priors.</p>
+<p><code>{r, comment=''} #Weakly informative priors for the linear model weights_prior_mean &lt;- c(0,0,0,0,0,0,0,0,0,0,0,0) weights_prior_std &lt;- c(10,10,10,10,10,10,10,10,10,10,10,10) bias_prior_mean &lt;- 0 bias_prior_std &lt;- 10</code></p>
+<p><code>{r, comment=''} #Weakly informative priors for the 2nd order model weights_1st_order_prior_mean &lt;- c(0,0,0,0,0,0,0,0,0,0,0,0) weights_1st_prior_std &lt;- c(10,10,10,10,10,10,10,10,10,10,10,10) weights_2nd_order_prior_mean &lt;- c(0,0,0,0,0,0,0,0,0,0,0,0) weights_2nd_prior_std &lt;- c(10,10,10,10,10,10,10,10,10,10,10,10) bias_prior_mean &lt;- 0 bias_prior_std &lt;- 10</code></p>
+<h1 id="stan-models-code">5) Stan models code:</h1>
+<p>Here is the linear model used:</p>
+<p><code>{r, comment='', warning=FALSE} cat(readLines('linear_model.stan'), sep = '\n')</code></p>
+<p>Here is the 2nd order polynomial model used:</p>
+<p><code>{r, comment=''} cat(readLines('non_linear_model.stan'), sep = '\n')</code></p>
+<h1 id="stan-options-explainations">6) Stan options explainations</h1>
+<p>For the Stan model fitting, we runs a total of 4 chains, each with
+10000 samples and another 10000 is discarded as warm up. We tried
+running 2000 iterations warm ups and 2000 samples but the models have
+not converged by then (even after we normalized non-binary features).
+The seed is set to 7 for result reproduction, and refresh is set to 0 to
+suppress the redundant print out in the report.</p>
+<p>Another interesting point is that normalized non-binary features
+makes the model fitted much faster. If we use the raw data and fit our
+linear model with 20000 iterations (half as warm up), then it takes
+around 20 minutes. However after the normalization, the whole process
+takes about one minute. So the take away lesson is besides the fact that
+the features’ range affect the final results, it also affects time for
+the model to reach the convergence as well. We still have this long time
+to convergence with the quadratic model as we just use the normalized
+features same as in the linear model without further preprocess, but due
+to time constraint we have not improve the preprocess for that
+particular model.</p>
+<p><code>{r, comment=''} #Preprocessing #Normalize non binary features preprocessed_clinical_records &lt;- data.frame(clinical_records) columns_to_preprocess &lt;- c(1, 3, 5, 7, 8, 9, 11, 12) preprocessed_clinical_records[columns_to_preprocess] &lt;-    as.data.frame(scale(preprocessed_clinical_records[columns_to_preprocess]))</code></p>
+<p><code>{r, comment=''} #Fit linear model fit_linear_model &lt;- function(weights_prior_mean,                              weights_prior_std,                              bias_prior_mean,                              bias_prior_std){   #print(preprocessed_clinical_records)   #Prepare the data for the model   clinical_data_for_stan_model&lt;- list(no_of_rows = nrow(preprocessed_clinical_records),                                       no_of_features = 12,                                       features = preprocessed_clinical_records[, 1:12],                                       outcome = preprocessed_clinical_records[, 13],                                       weights_prior_mean = weights_prior_mean,                                       weights_prior_std = weights_prior_std,                                       bias_prior_mean = bias_prior_mean,                                       bias_prior_std = bias_prior_std)    #Fit the model   stan_model &lt;- cmdstan_model(stan_file = "linear_model.stan")   stan_linear_model_fit &lt;- stan_model$sample(data = clinical_data_for_stan_model,                                           chains = 4,                                           iter_warmup = 10000,                                           iter_sampling = 10000,                                           seed = 7,                                            refresh=0)   return (stan_linear_model_fit) }</code></p>
+<p><code>{r, comment='', warning=FALSE} stan_linear_model_fit &lt;- fit_linear_model(weights_prior_mean = weights_prior_mean,                                    weights_prior_std = weights_prior_std,                                    bias_prior_mean = bias_prior_mean,                                    bias_prior_std = bias_prior_std)</code></p>
+<p><code>{r, comment=''} stan_model_summary &lt;- stan_linear_model_fit$summary()[c(1,2,8,9,10)] head(stan_model_summary, 5)</code>
+<code>{r, comment=''} #Fit 2nd order polymonial model fit_2nd_order_model &lt;- function(weights_1st_order_prior_mean,                                 weights_1st_prior_std,                                 weights_2nd_order_prior_mean,                                 weights_2nd_prior_std,                                 bias_prior_mean,                                 bias_prior_std){   #Prepare the data for the model   clinical_data_for_stan_model&lt;- list(no_of_rows = nrow(preprocessed_clinical_records),                                       no_of_features = 12,                                       features = preprocessed_clinical_records[, 1:12],                                       outcome = preprocessed_clinical_records[, 13],                                       weights_1st_order_prior_mean = weights_1st_order_prior_mean,                                       weights_1st_prior_std = weights_1st_prior_std,                                       weights_2nd_order_prior_mean = weights_2nd_order_prior_mean,                                       weights_2nd_prior_std = weights_2nd_prior_std,                                       bias_prior_mean = bias_prior_mean,                                       bias_prior_std = bias_prior_std)    #Fit the model   stan_model &lt;- cmdstan_model(stan_file = "non_linear_model.stan")   stan_2nd_order_model_fit &lt;- stan_model$sample(data = clinical_data_for_stan_model,                                           chains = 4,                                           iter_warmup = 10000,                                           iter_sampling = 10000,                                           seed = 7,                                            refresh=0)   return (stan_2nd_order_model_fit) }</code></p>
+<p>```{r, comment=’’, warning=FALSE} stan_model_2nd_order_fit &lt;- 0
+if(file.exists(“stan_model_2nd_order_fit.RDS”)) {
+stan_model_2nd_order_fit &lt;- readRDS(file =
+“stan_model_2nd_order_fit.RDS”) } else { #Fit 2nd order model
+stan_model_2nd_order_fit &lt;- fit_2nd_order_model(
+weights_1st_order_prior_mean = weights_1st_order_prior_mean,
+weights_1st_prior_std = weights_1st_prior_std,
+weights_2nd_order_prior_mean = weights_2nd_order_prior_mean,
+weights_2nd_prior_std = weights_2nd_prior_std, bias_prior_mean =
+bias_prior_mean, bias_prior_std = bias_prior_std)
+stan_model_2nd_order_fit$save_object(file =
+“stan_model_2nd_order_fit.RDS”) }</p>
+<p>stan_model_2nd_order_draws &lt;- stan_model_2nd_order_fit$draws()</p>
+<pre><code>
+```{r, comment=&#39;&#39;}
+stan_model_summary_2 &lt;- stan_model_2nd_order_fit$summary()[c(1,2,8,9,10)]
+head(stan_model_summary_2, 5)</code></pre>
+<h1 id="convergence-diagnostics">7) Convergence diagnostics</h1>
+<p>In order to assess the convergence of the models, we attempt to: -
+Check Rhat, ESS (effective sample size) values of the simulation to see
+whether the iterations chain mixed well together. These values could be
+checked from the model’s summary table above. - Take a look at the
+density estimation of the parameters graphs to see whether they agrees
+with each other by overlapping - Look at the trace plot to see if the
+traces nearly overlaps</p>
+<p>Looking at the summary table of both models, we can see the Rhat of
+value of all the chains are very near 1, and the ESS values are high.
+Furthermore, the weights estimation of the of the chains overlaps
+nicely, which can be see at the density and trace plots.</p>
+<p><code>{r, comment=''} #Convergence diagnostics for the linear model stan_linear_model_draws &lt;- stan_linear_model_fit$draws() parameters_of_concern &lt;- c("lp__", "w[1]", "w[2]", "w[3]", "w[4]", "w[5]",                          "w[6]", "w[7]", "w[8]", "w[9]", "w[10]",                          "w[11]", "w[12]") mcmc_dens_overlay(stan_linear_model_draws, pars = parameters_of_concern,                 facet_args = list(ncol = 4)) +                 facet_text(size = 14) #great to show convergence mcmc_trace(stan_linear_model_draws, pars = parameters_of_concern) #great to show convergence</code></p>
+<p><code>{r, comment=''} stan_linear_model_fit$diagnostic_summary()</code></p>
+<p><code>{r, comment=''} #Convergence diagnostics for the 2nd order model stan_model_2nd_order_draws &lt;- stan_model_2nd_order_fit$draws() parameters_of_concern &lt;- c("lp__", "w1[1]", "w1[2]", "w1[3]", "w1[4]", "w1[5]",                          "w1[6]", "w1[7]", "w1[8]", "w1[9]", "w1[10]",                          "w1[11]", "w1[12]") mcmc_dens_overlay(stan_model_2nd_order_draws, pars = parameters_of_concern,                 facet_args = list(ncol = 4)) +                 facet_text(size = 14) #great to show convergence mcmc_trace(stan_model_2nd_order_draws, pars = parameters_of_concern) #great to show convergence</code></p>
+<p><code>{r, comment=''} stan_model_2nd_order_fit$diagnostic_summary()</code></p>
+<h1 id="posterior-predictive-check-and-classification-accuracy">8)
+Posterior predictive check and classification accuracy</h1>
+<p>We made a stan_glm model with the same prior for predictive checks
+<code>{r, comment=''} #Linear model formula (reg_formula &lt;- formula(paste("DEATH_EVENT ~", paste(names(preprocessed_clinical_records)[1:(dim(preprocessed_clinical_records)[2]-1)], collapse = " + "))))</code></p>
+<p><code>{r, comment=''} #Generalized linear model post1 &lt;- stan_glm(reg_formula, data = preprocessed_clinical_records,                    family = binomial(link = "logit"), prior = normal(0,10),                   prior_intercept = normal(0,10), QR=TRUE)</code></p>
+<p><code>{r, comment=''} #Leave-one-out (loo1 &lt;- loo(post1, save_psis = TRUE))</code></p>
+<p><code>{r, comment=''} #Predictive performance measures preprocessed_clinical_records_2 &lt;- preprocessed_clinical_records preprocessed_clinical_records_2$DEATH_EVENT &lt;- factor(preprocessed_clinical_records_2$DEATH_EVENT) linpred &lt;- posterior_linpred(post1) preds &lt;- posterior_epred(post1) pred &lt;- colMeans(preds) pr &lt;- as.integer(pred &gt;= 0.5) y &lt;- preprocessed_clinical_records_2$DEATH_EVENT x &lt;- model.matrix(DEATH_EVENT ~ . - 1, data = preprocessed_clinical_records)</code></p>
+<p><code>{r, comment=''} # posterior classification accuracy round(mean(xor(pr,as.integer(y==0))),2)</code></p>
+<p><code>{r, comment=''} # posterior balanced classification accuracy round((mean(xor(pr[y==0]&gt;0.5,as.integer(y[y==0])))+mean(xor(pr[y==1]&lt;0.5,as.integer(y[y==1]))))/2,2)</code></p>
+<p><code>{r, comment=''} # LOO predictive probabilities ploo=E_loo(preds, loo1$psis_object, type="mean", log_ratios = -log_lik(post1))$value # LOO classification accuracy round(mean(xor(ploo&gt;0.5,as.integer(y==0))),2)</code></p>
+<p><code>{r, comment=''} # LOO balanced classification accuracy round((mean(xor(ploo[y==0]&gt;0.5,as.integer(y[y==0])))+mean(xor(ploo[y==1]&lt;0.5,as.integer(y[y==1]))))/2,2)</code>
+Classification accuracies seem to be decent.</p>
+<p><code>{r, comment=''} ggplot(data = data.frame(pred=pred,loopred=ploo,y=as.numeric(y)-1), aes(x=loopred, y=y)) +   stat_smooth(method='glm', formula = y ~ ns(x, 5), fullrange=TRUE) +   geom_abline(linetype = 'dashed') +   labs(x = "Predicted (LOO)", y = "Observed") +   geom_jitter(height=0.02, width=0, alpha=0.3) +   scale_y_continuous(breaks=seq(0,1,by=0.1)) +   xlim(c(0,1))</code></p>
+<p>From the plot above, we can see that model doesn’t perfectly predict
+the value. There are parts where the model predicts less instances than
+observed ([0.00,0.25] and [0.60,0.80] on the x-axis) and also predicts
+more instances than observed ([0.25,0.60] and [0.80,1.00] on the
+x-axis). In total it predicts more instances than observed (0.8 observed
+vs 1.00 predicted).</p>
+<h1 id="sensitivity-analysis">9) Sensitivity analysis</h1>
+<p>The prior sensitivity can be checked by using a relatively different
+prior to fit the model and see whether the final results differs. If the
+final result stays the same then the model is not sensitive to prior
+(unless the new prior is very bad). In our situation, we feed different
+means and std as priors from the original model and draw the density
+graph of weights in fitted model and compares them. As the final fitted
+weights <span class="math inline"><em>w</em></span> of their respective
+model are nearly identical, we can says that these models are
+prior-insensitive. Below we showcase a few weights fitted from the
+models, with the top rows are model that used the original priors, and
+the bottom rows are the model that used alternate priors. As you can
+see, their respective densities curves are nearly identical.</p>
+<p>```{r, comment=’’, warning=FALSE} #Fit linear model with alternate
+prior (for prior sensitivity analysis) alternate_weights_prior_mean
+&lt;- c(4,8,-8.1,-16,5,3.5,6,-8,1,7,9,6) alternate_weights_prior_std
+&lt;- c(5,8,8,7.8,7,9.1,6,8,12,10,7,8) alternate_bias_prior_mean &lt;- 3
+alternate_bias_prior_std &lt;- 5</p>
+<p>alternate_prior_stan_linear_model_fit &lt;-
+fit_linear_model(weights_prior_mean = alternate_weights_prior_mean,
+weights_prior_std = alternate_weights_prior_std, bias_prior_mean =
+alternate_bias_prior_mean, bias_prior_std =
+alternate_bias_prior_std)</p>
+<p>alternate_prior_stan_model_draws &lt;-
+alternate_prior_stan_linear_model_fit$draws()</p>
+<pre><code>
+```{r, comment=&#39;&#39;}
+#Fit 2nd order model with alternate prior (for prior sensitivity analysis)
+weights_1st_order_alternate_prior_mean &lt;- c(3,5,3,5,3,3,2,2,3,4,5,6)
+weights_1st_alternate_prior_std &lt;- c(8,9,7,10,10,10,10,10,10,10,10,10)
+weights_2nd_order_alternate_prior_mean &lt;- c(-2,5,-4,-8,1,3,5,2,-6,8,5,-9)
+weights_2nd_alternate_prior_std &lt;- c(10,10,10,10,10,10,10,10,10,10,10,10)
+bias_alternate_prior_mean &lt;- 5
+bias_alternate_prior_std &lt;- 10
+
+stan_model_2nd_order_alt_prior_fit &lt;- 0
+if(file.exists(&quot;stan_model_2nd_order_alt_prior_fit.RDS&quot;)) {
+  stan_model_2nd_order_alt_prior_fit &lt;- readRDS(file = &quot;stan_model_2nd_order_alt_prior_fit.RDS&quot;)
+} else {
+  stan_model_2nd_order_alt_prior_fit &lt;- fit_2nd_order_model(
+                weights_1st_order_prior_mean = weights_1st_order_alternate_prior_mean,
+                weights_1st_prior_std = weights_1st_alternate_prior_std,
+                weights_2nd_order_prior_mean = weights_2nd_order_alternate_prior_mean,
+                weights_2nd_prior_std = weights_2nd_alternate_prior_std,
+                bias_prior_mean = bias_prior_mean,
+                bias_prior_std = bias_prior_std)
+  stan_model_2nd_order_alt_prior_fit$save_object(file = &quot;stan_model_2nd_order_alt_prior_fit.RDS&quot;)
+}
+
+stan_model_2nd_order_alt_prior_draws &lt;- stan_model_2nd_order_alt_prior_fit$draws()</code></pre>
+<p><code>{r, comment=''} #Function to draws the fitted parameters for visual comparision compare_models_result_visual &lt;- function(model_og_draws,                                          model_alt_draws,                                          params){   w_a &lt;- mcmc_dens_overlay(model_og_draws, pars = params,                 facet_args = list(ncol = 3)) + facet_text(size = 14) + yaxis_text()   w_b &lt;- mcmc_dens_overlay(model_alt_draws, pars = params,                 facet_args = list(ncol = 3)) + facet_text(size = 14) + yaxis_text()   grid.arrange(w_a, w_b, ncol=1,               top="First row: original prior | Bottom row: alternate prior") }</code></p>
+<p>Compare the fitted parameters visually. We can see that …
+<code>{r, comment=''} compare_models_result_visual(stan_linear_model_draws,                               alternate_prior_stan_model_draws,                              c("w[1]", "w[2]", "w[3]"))</code></p>
+<p><code>{r, comment=''} #Visually check whether the 2nd order model converges compare_models_result_visual(stan_model_2nd_order_draws,                               stan_model_2nd_order_alt_prior_draws,                              c("w1[1]", "w1[2]", "w1[3]"))</code></p>
+<h1 id="model-comparision">10) Model comparision:</h1>
+<p>We compare the model in these two aspects: - Whether the model
+reliable with k-pareto. - Compare the loo elpd (leave-one-out cross
+validation expected log predictive density ). The model has higher value
+is better.</p>
+<p>In the code below we see that all the k-pareto value of the linear
+model is good, but there are a some k-value of the quadratic model goes
+above the good threshold. This means that the quadratic model should not
+be considered reliable, and in this case we guess it likely to exhibit
+over fitting (similar to when we try to fit model as good as possible
+with high degree polynomial). Comparing the elpd indicates that the
+better candidate is the linear model.</p>
+<p><code>{r, comment='', warning=FALSE} stan_linear_model_fit_loo &lt;- stan_linear_model_fit$loo() stan_linear_model_fit_loo</code></p>
+<p><code>{r, comment='', warning=FALSE} stan_model_2nd_order_fit_loo &lt;- stan_model_2nd_order_fit$loo() stan_model_2nd_order_fit_loo</code></p>
+<p><code>{r, comment=''} #Compare the two models with loo (expected log pointwise predictive density with leave-one-out cv) loo::loo_compare(stan_linear_model_fit_loo, stan_model_2nd_order_fit_loo)</code></p>
+<p><code>{r, comment='', warning=FALSE} #Compare our stan_glm model with our stan_linear_model loo::loo_compare(stan_linear_model_fit_loo, loo1)</code>
+We can see there’s very minimal difference between stan_linear and
+stan_glm.</p>
+<p><code>{r, comment='', warning=FALSE} parameters_of_concern &lt;- c("w[1]", "w[2]", "w[3]", "w[4]", "w[5]",                          "w[6]", "w[7]", "w[8]", "w[9]", "w[10]",                          "w[11]", "w[12]") mcmc_dens_chains(stan_linear_model_draws, pars = parameters_of_concern)</code></p>
+<h1 id="discussion-of-issues-and-potential-improvements.">11) Discussion
+of issues and potential improvements.</h1>
+<p>Our group could have done a lot more and we could have gone
+considerably more in-depth. For instance, the two models that were used
+in the project were a linear model and a non-linear model. Perhaps, a
+hierarchical model could have been employed. There was also a big
+correlation between two clinical features, smoking and sex. This could
+be seen from the correlation plot of features in the first chapters.
+Many pieces of research suggest that men are more likely to smoke than
+women but the dependency needs to be resolved for better analysis.</p>
+<p>Another option could have been to experiment with certain types of
+machine learning models. We could have tested the accuracy of a machine
+learning model and compared it with the linear and non-linear model in
+our report. Possibly a larger than two polynomials could have performed
+better than the two polynomial.</p>
+<p>We got our feature scaling working with the linear model, but it’s
+not too good for the quadratic model. For the linear model we got
+reasonable fitting times within 1 minute, but for the quadratic it took
+10 minutes to fit, which is too long and should be improved.</p>
+<h1 id="conclusion-what-was-learned-from-the-data-analysis.">12)
+Conclusion what was learned from the data analysis.</h1>
+<p>Below is a brief conclusion about what was learnt from the data
+analysis. The conclusion only goes through the important aspects and the
+rest of the information can be found in the individual chapters.</p>
+<ul>
+<li>Rhat of value each chain in convergence diagnostic essentially 1.
+Meaning that the chains have converged. Effective sample size values are
+large. meaning that we can be satisfied with the precision.</li>
+<li>Posterior predictive check tells us that model doesn’t perfectly
+predict the value. Classification accuracies appear to be
+respectable.</li>
+<li>Same models with different priors are nearly identical. Indicating
+our models are prior-insensitive.</li>
+<li>For predicting the death event, our model shows that weights for
+time (w[12]) and ejection fraction (w[5]) have negative correlation with
+the death event, meaning</li>
+</ul>
+<h1
+id="self-reflection-of-what-the-group-learned-while-making-the-project.">13)
+Self-reflection of what the group learned while making the project.</h1>
+<p>Our group learnt a lot of new things in the context of data analysis
+and information visualisation. Aspects like the correct way of
+referencing will make a prominent difference in the final report.
+Furthermore, things like working together in a group and having to
+schedule to the advantage of the group reassemble reality. All in all,
+there were plenty of new specialities and techniques learnt that will
+most probably be beneficial for us when doing similar type of
+assignments or jobs in the future.</p>
+<h1 id="references">References</h1>
+<p>[DATASET] Davide Chicco, Giuseppe Jurman (2020): “Machine learning
+can predict survival of patients with heart failure from serum
+creatinine and ejection fraction alone. BMC Medical Informatics and
+Decision Making” 20, 16.
+(https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-020-1023-5)</p>
+<p>[1] “Cardiovascular diseases (CVDs).”
+https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds).
+[accessed 2.12.2022]</p>
+<p>[2] “Creatine phosphokinase test.”
+https://www.mountsinai.org/health-library/tests/creatine-phosphokinase-test.
+[accessed 2.12.2022] [3] “Ejection Fraction.”
+https://my.clevelandclinic.org/health/articles/16950-ejection-fraction.
+[accessed 2.12.2022]</p>
+<p>[4] “Serum creatinine test.”
+https://www.kidneyfund.org/all-about-kidneys/tests/serum-creatinine-test.
+[accessed 2.12.2022]</p>
+<p>[5] “serum sodium.”
+https://medlineplus.gov/lab-tests/sodium-blood-test/serum_sodium/
+[accessed 2.12.2022]</p>
+</body>
+</html>
